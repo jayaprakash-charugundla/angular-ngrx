@@ -62,7 +62,32 @@ Checklist: Developer tools and Debugging
 - Inspect the action logs
 - Visualize state tree
 - Time travel debugging
-- 
+
+
+Benefits of Effects
+-------------------
+- Keep components pure
+- Isolate side effects
+- Easier to test
+
+RxJs Operators
+--------------
+switchMap - Cancels the current subscription/request and cause race condition 
+Use get requests or cancelable requests like searches
+
+concatMap - Runs subscriptions/requests in order and is less performant
+Use get, post and put requests when order is important
+
+mergeMap - Runs subscriptions/requests in parallel
+Use for put, post and delete methods when order is not important
+
+exhaustMap - Ignores all subsequent subscriptions/requests until it completes
+Use for login when you do want more requests until the initial one is complete
+
+
+
+
+
 
 
 

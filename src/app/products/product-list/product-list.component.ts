@@ -1,11 +1,11 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 
 import {Product} from '../product';
 import {ProductService} from '../product.service';
-import {Store, select} from '@ngrx/store';
-import {getCurrentProduct, getShowProductCode, ProductState} from '../state/product.reducer';
+import {select, Store} from '@ngrx/store';
+import {getCurrentProduct, getError, getProducts, getShowProductCode} from '../state/product.reducer';
 import {State} from '../../state/app.state';
 import * as productActions from '../state/product.action';
 
@@ -15,14 +15,11 @@ import * as productActions from '../state/product.action';
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
+  products$: Observable<Product[]>;
+  errorMessage$: Observable<string>;
   pageTitle = 'Products';
-  errorMessage: string;
-
   displayCode: boolean;
-
   products: Product[];
-
-  // Used to highlight the selected product in the list
   selectedProduct: Product | null;
 
   constructor(private store: Store<State>,
@@ -30,10 +27,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.productService.getProducts().subscribe(
-      (products: Product[]) => this.products = products,
-      (err: any) => this.errorMessage = err.error
-    );
+
+    this.errorMessage$ = this.store.pipe(select(getError));
+
+    this.store.dispatch(new productActions.Load());
+
+    this.products$ =  this.store.pipe(select(getProducts));
+
 
     this.store.pipe(select(getShowProductCode)).subscribe(
       showProductCode => {
@@ -47,9 +47,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-  }
-
   checkChanged(value: boolean): void {
     this.store.dispatch(new productActions.ToggleProductCode(value));
   }
@@ -60,5 +57,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   productSelected(product: Product): void {
     this.store.dispatch(new productActions.SetCurrentProduct(product));
+  }
+
+  ngOnDestroy(): void {
   }
 }
