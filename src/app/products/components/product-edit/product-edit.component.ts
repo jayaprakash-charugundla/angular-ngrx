@@ -1,16 +1,14 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-import {Subscription} from 'rxjs';
-
-import {Product} from '../product';
-import {ProductService} from '../product.service';
-import {GenericValidator} from '../../shared/generic-validator';
-import {NumberValidators} from '../../shared/number.validator';
+import {Product} from '../../product';
+import {ProductService} from '../../product.service';
+import {GenericValidator} from '../../../shared/generic-validator';
+import {NumberValidators} from '../../../shared/number.validator';
 import {select, Store} from '@ngrx/store';
-import {State} from '../../state/app.state';
-import {getCurrentProduct} from '../state/product.reducer';
-import * as productActions from '../state/product.action';
+import {State} from '../../../state/app.state';
+import {getCurrentProduct} from '../../state/index';
+import * as productActions from '../../state/product.action';
 
 @Component({
   selector: 'pm-product-edit',
@@ -143,10 +141,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             (err: any) => this.errorMessage = err.error
           );
         } else {
-          this.productService.updateProduct(p).subscribe(
-            product => this.store.dispatch(new productActions.SetCurrentProduct(product)),
-            (err: any) => this.errorMessage = err.error
-          );
+          this.store.dispatch(new productActions.UpdateProduct(p));
         }
       }
     } else {
